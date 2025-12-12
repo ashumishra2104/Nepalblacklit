@@ -64,8 +64,12 @@ with col2:
         progress_bar = st.progress(0)
         status_text = st.empty()
         
-        with st.spinner("Fetching ALL data... This may take a while..."):
-            df_full, pdf_url = scrape_cib_data(limit=None, progress_callback=update_progress, return_url=True)
+        st.warning("⚠️ CRITICAL: Do not close this tab. The process takes 30-60+ minutes.")
+        
+        with st.spinner("Fetching ALL data... (This WILL take a long time, please verify terminal for detailed logs if needed)"):
+            # Explicitly using max_pages=None to ensure ALL pages are fetched
+            # Previous limit was 'None' which also meant all pages, but being explicit is safer
+            df_full, pdf_url = scrape_cib_data(limit=None, max_pages=None, progress_callback=update_progress, return_url=True)
             
             if df_full is not None:
                 st.success(f"Successfully fetched {len(df_full)} rows!")
@@ -80,7 +84,7 @@ with col2:
                 st.download_button(
                     label="Download Full Excel",
                     data=buffer.getvalue(),
-                    file_name="cib_blacklist_full.xlsx",
+                    file_name=f"cib_blacklist_full_{int(time.time())}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
             else:
