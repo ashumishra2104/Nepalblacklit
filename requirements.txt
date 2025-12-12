@@ -7,3 +7,4 @@ xlsxwriter
 openpyxl
 lxml
 cryptography
+numpy<2
