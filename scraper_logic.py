@@ -3,6 +3,7 @@ import pdfplumber
 import os
 import pandas as pd
 from bs4 import BeautifulSoup
+import gc
 
 def get_pdf_url():
     url = "https://cibnepal.org.np/reports?csrt=16497528134041520037"
@@ -88,6 +89,13 @@ def scrape_cib_data(limit=None, max_pages=None, progress_callback=None, return_u
                 page = pdf.pages[i]
                 tables = page.extract_tables()
                 
+                # Explicitly release page memory
+                page.flush_cache()
+                del page
+                
+                if i % 50 == 0:
+                    gc.collect()
+
                 if not tables:
                     # Try text extraction if no tables found (debug)
                     # print(f"Page {i+1}: No tables found.")
